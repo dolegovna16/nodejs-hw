@@ -17,15 +17,14 @@ const noteSchema = new Schema(
     },
     content: {
       type: String,
-      required: false,
-      trim: true,
       default: '',
+      trim: true,
     },
     tag: {
       type: String,
-      required: false,
       enum: TAGS,
       default: 'Todo',
+      required: true,
     },
   },
   {
@@ -34,13 +33,7 @@ const noteSchema = new Schema(
   },
 );
 
-noteSchema.index(
-  { title: 'text', content: 'text' },
-  {
-    name: 'NoteTextIndex',
-    weights: { title: 5, content: 1 },
-    default_language: 'english',
-  },
-);
+// текстовий індекс для пошуку
+noteSchema.index({ title: 'text', content: 'text' });
 
 export const Note = model('Note', noteSchema);
