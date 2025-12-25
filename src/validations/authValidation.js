@@ -1,15 +1,19 @@
-import Joi from 'joi';
+import { Joi, Segments } from 'celebrate';
 
 export const registerUserSchema = {
-  body: Joi.object({
+  [Segments.BODY]: Joi.object({
     email: Joi.string().email().required(),
-    password: Joi.string().min(8).required(),
+    password: Joi.string().min(8).required().messages({
+      'string.min': 'Password must be at least {#limit} characters long',
+    }),
   }),
 };
 
 export const loginUserSchema = {
-  body: Joi.object({
+  [Segments.BODY]: Joi.object({
     email: Joi.string().email().required(),
-    password: Joi.string().required(),
+    password: Joi.string().min(8).required().messages({
+      'string.min': 'Password must be at least {#limit} characters long',
+    }),
   }),
 };

@@ -1,13 +1,15 @@
-import { model, Schema } from 'mongoose';
+// src/models/note.js
 
-// {
-//    "title": "LOTR",
-//     "content":  "great books",
-//     "tag": "Todo"
-// }
+import { Schema, model } from 'mongoose';
+import { TAGS } from '../constants/tags.js';
 
 const noteSchema = new Schema(
   {
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
     title: {
       type: String,
       required: true,
@@ -16,25 +18,14 @@ const noteSchema = new Schema(
     content: {
       type: String,
       required: false,
-      default: '',
       trim: true,
+      default: '',
     },
     tag: {
       type: String,
-      enum: [
-        'Work',
-        'Personal',
-        'Meeting',
-        'Shopping',
-        'Ideas',
-        'Travel',
-        'Finance',
-        'Health',
-        'Important',
-        'Todo',
-      ],
+      required: false,
+      enum: TAGS,
       default: 'Todo',
-      required: true,
     },
   },
   {
@@ -43,4 +34,13 @@ const noteSchema = new Schema(
   },
 );
 
-export const Note = model('notes', noteSchema);
+noteSchema.index(
+  { title: 'text', content: 'text' },
+  {
+    name: 'NoteTextIndex',
+    weights: { title: 5, content: 1 },
+    default_language: 'english',
+  },
+);
+
+export const Note = model('Note', noteSchema);

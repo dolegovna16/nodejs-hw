@@ -1,55 +1,45 @@
+// src/server.js
 import express from 'express';
 import cors from 'cors';
-import pino from 'pino-http';
-import cookieParser from 'cookie-parser';
-import { errors as celebrateErrors } from 'celebrate';
 import 'dotenv/config';
-
-import { connectMongoDB } from './db/connectMongoDB.js';
-import authRouter from './routes/authRoutes.js';
-import notesRouter from './routes/notesRoutes.js';
+import { errors } from 'celebrate';
+import cookieParser from 'cookie-parser';
+import { logger } from './middleware/logger.js';
+import authRoutes from './routes/authRoutes.js';
+import notesRoutes from './routes/notesRoutes.js';
 import { notFoundHandler } from './middleware/notFoundHandler.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import { connectMongoDB } from './db/connectMongoDB.js';
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;
 
-app.use(express.json());
-app.use(cors());
+// Middleware
+app.use(logger);
+app.use(
+  express.json({
+    type: ['application/json', 'application/vnd.api+json'],
+  }),
+); // Дозволяє обробляти дані у форматі JSON, які надходять у body запиту.
+app.use(cors()); // Дозволяє запити з будь-яких джерел
 app.use(cookieParser());
 
-app.use(
-  pino({
-    level: 'info',
-    transport: {
-      target: 'pino-pretty',
-      options: {
-        colorize: true,
-        translateTime: 'HH:MM:ss',
-        ignore: 'pid,hostname',
-        messageFormat:
-          '{req.method} {req.url} {res.statusCode} - {responseTime}ms',
-        hideObject: true,
-      },
-    },
-  }),
-);
+app.use(authRoutes);
+app.use(notesRoutes);
 
-app.use(authRouter);
-app.use(notesRouter);
-
+// Middleware 404 (після всіх маршрутів)
 app.use(notFoundHandler);
-app.use(celebrateErrors());
+
+// обробка помилок від celebrate (валідація)
+app.use(errors());
+
+// Middleware для обробки помилок
 app.use(errorHandler);
 
-const startServer = async () => {
-  await connectMongoDB();
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-  });
-};
+// підключення до MongoDB
+await connectMongoDB();
 
-startServer().catch(err => {
-  console.error('Failed to start server:', err.message);
-  process.exit(1);
+// Запуск сервера
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
