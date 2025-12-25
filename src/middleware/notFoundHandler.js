@@ -1,5 +1,5 @@
-export const notFoundHandler = (req, res) => {
-  res.status(404).json({
-    message: 'Route not found',
-  });
+// src/middleware/notFoundHandler.js
+
+export const notFoundHandler = (_req, res) => {
+  res.status(404).json({ message: 'Route not found' });
 };

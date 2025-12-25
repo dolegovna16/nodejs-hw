@@ -8,17 +8,13 @@ export const authenticate = async (req, res, next) => {
     return;
   }
 
-  const session = await Session.findOne({
-    accessToken: req.cookies.accessToken,
-  });
-
+  const session = await Session.findOne({ accessToken: req.cookies.accessToken });
   if (!session) {
     next(createHttpError(401, 'Session not found'));
     return;
   }
 
-  const isAccessTokenExpired =
-    new Date() > new Date(session.accessTokenValidUntil);
+  const isAccessTokenExpired = new Date() > new Date(session.accessTokenValidUntil);
 
   if (isAccessTokenExpired) {
     return next(createHttpError(401, 'Access token expired'));
@@ -34,4 +30,5 @@ export const authenticate = async (req, res, next) => {
   req.user = user;
 
   next();
+
 };
