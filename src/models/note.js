@@ -1,15 +1,8 @@
-// src/models/note.js
-
-import { Schema, model } from 'mongoose';
+import { model, Schema } from 'mongoose';
 import { TAGS } from '../constants/tags.js';
 
 const noteSchema = new Schema(
   {
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
     title: {
       type: String,
       required: true,
@@ -24,6 +17,11 @@ const noteSchema = new Schema(
       type: String,
       enum: TAGS,
       default: 'Todo',
+      required: true,
+    },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
     },
   },
