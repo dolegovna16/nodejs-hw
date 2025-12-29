@@ -10,13 +10,12 @@ const noteSchema = new Schema(
     },
     content: {
       type: String,
-      required: false,
       default: '',
       trim: true,
     },
     tag: {
       type: String,
-      enum: [...TAGS],
+      enum: TAGS,
       default: 'Todo',
       required: true,
     },
@@ -32,6 +31,7 @@ const noteSchema = new Schema(
   },
 );
 
+// текстовий індекс для пошуку
 noteSchema.index({ title: 'text', content: 'text' });
 
 export const Note = model('Note', noteSchema);
