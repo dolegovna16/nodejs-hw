@@ -21,6 +21,12 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(logger);
 
+// ✅ public health check (Render)
+app.get('/', (req, res) => {
+  res.status(200).json({ message: 'API is running' });
+});
+
+// ✅ routes WITHOUT prefixes (paths already defined inside routers)
 app.use(authRoutes);
 app.use(userRoutes);
 app.use(notesRoutes);
