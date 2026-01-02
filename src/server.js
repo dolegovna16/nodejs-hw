@@ -26,10 +26,10 @@ app.get('/', (req, res) => {
   res.status(200).json({ message: 'API is running' });
 });
 
-// ✅ route prefixes
-app.use('/auth', authRoutes);
-app.use('/users', userRoutes);
-app.use('/notes', notesRoutes);
+// ✅ routes WITHOUT prefixes (paths already defined inside routers)
+app.use(authRoutes);
+app.use(userRoutes);
+app.use(notesRoutes);
 
 app.use(notFoundHandler);
 app.use(celebrateErrors());
